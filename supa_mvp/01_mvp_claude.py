@@ -12,7 +12,6 @@ from fastapi import FastAPI, Request, HTTPException
 from fastapi.responses import HTMLResponse, RedirectResponse
 from dotenv import load_dotenv
 from supabase import create_client, Client
-from urllib.parse import urlencode
 
 # Load environment variables
 load_dotenv()
@@ -88,7 +87,8 @@ async def root(request: Request):
                 """)
         except Exception as e:
             # Token is invalid or expired, show login page
-            pass
+            # Log the error for debugging (in production, use proper logging)
+            print(f"Authentication error: {str(e)}")
     
     # No valid token, show login page
     return HTMLResponse(content="""
@@ -162,7 +162,7 @@ async def login(request: Request):
         })
         
         # Redirect to the OAuth URL
-        if response and hasattr(response, 'url') and response.url:
+        if response and response.url:
             return RedirectResponse(url=response.url)
         else:
             raise HTTPException(status_code=500, detail="Failed to initiate OAuth flow")

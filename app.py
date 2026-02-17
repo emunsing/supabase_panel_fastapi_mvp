@@ -96,22 +96,24 @@ class AuthApp:
     
     def create_app(self):
         """Create the main application layout."""
-        # Check for OAuth callback parameters in URL
-        url_params = pn.state.location.query_params
-        
         # Try to get user from Supabase session
         user_email = None
         
-        # Check if we have an access_token in the URL (OAuth callback)
-        if 'access_token' in url_params:
-            try:
-                access_token = url_params['access_token']
-                # Set the session with the access token
-                response = supabase.auth.get_user(access_token)
-                if response and response.user:
-                    user_email = response.user.email
-            except Exception as e:
-                print(f"Error getting user from token: {e}")
+        # Check if we have access to Panel state (only available when server is running)
+        if pn.state.location:
+            # Check for OAuth callback parameters in URL
+            url_params = pn.state.location.query_params
+            
+            # Check if we have an access_token in the URL (OAuth callback)
+            if 'access_token' in url_params:
+                try:
+                    access_token = url_params['access_token']
+                    # Set the session with the access token
+                    response = supabase.auth.get_user(access_token)
+                    if response and response.user:
+                        user_email = response.user.email
+                except Exception as e:
+                    print(f"Error getting user from token: {e}")
         
         # If no email from callback, check existing session
         if not user_email:
@@ -129,13 +131,15 @@ class AuthApp:
             return self.create_login_page()
 
 
-# Create the application
-app = AuthApp()
-template = pn.template.FastListTemplate(
-    title="Panel OAuth MVP",
-    main=[app.create_app()],
-    theme="default"
-)
+def create_template():
+    """Create the Panel template."""
+    app = AuthApp()
+    template = pn.template.FastListTemplate(
+        title="Panel OAuth MVP",
+        main=[app.create_app()],
+        theme="default"
+    )
+    return template
 
 # Serve the application
-template.servable()
+create_template().servable()

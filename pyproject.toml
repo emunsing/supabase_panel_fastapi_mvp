@@ -1,0 +1,25 @@
+[tool.poetry]
+name = "supa-mvp"
+version = "0.1.0"
+description = ""
+authors = ["emunsing <eric.munsing@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+fastapi = "*"
+uvicorn = "*"
+sqlalchemy = "*"
+asyncpg = "*"
+alembic = "*"
+panel = {extras = ["fastapi"], version = "*"}
+pydantic = {extras = ["email"], version = "*"}
+python-dotenv = "*"
+httpx = "*"
+supabase = "*"
+
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
